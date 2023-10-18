@@ -11,9 +11,12 @@ public class Gs1Check {
 
     private WebDriver webDriver = null;
     public Gs1Check() {
+    }
+    public void Start (Map<String, String> mapp) {
         webDriver = new ChromeDriver();
         loginSet("https://gepir.gs1.org/index.php/search-by-gtin", "a.dolubaev@it.salyk.kg", "69vM?7]8");
-        Map<String, String> map = fetchTempProduct();
+        Map<String, String> map;
+        map = mapp;
 
         for (Map.Entry<String, String> entry : map.entrySet()) {
             processEntry(entry.getKey(), entry.getValue());
@@ -21,6 +24,7 @@ public class Gs1Check {
 
         webDriver.quit();
     }
+
     private void loginSet(String url,String login, String password) {
         try {
             webDriver.get(url);
@@ -44,50 +48,40 @@ public class Gs1Check {
 
             if (webDriver.getPageSource().contains("alert-dismissible")) {
                 throw new NoSuchElementException();
+            } else if (webDriver.getPageSource().contains("internal use only"))  {
+                throw new InvalidElementStateException();
             }
 
             keyValueElement.clear();
         } catch (NoSuchElementException | InterruptedException e) {
             updateComment(key, "Незарегистрированный штрих код");
         } catch (InvalidElementStateException e) {
-            if (webDriver.getPageSource().contains("internal use only"))
                 updateComment(key, "Внутренний штрих код");
         } finally {
             webDriver.navigate().refresh();
         }
     }
     private void updateComment(String key, String comm) {
-        try (Connection connection = SqlConnection.getDestinationConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE tempproduct SET comment = ? WHERE id = ?")) {
+        String updateQuery = "UPDATE tempproduct SET comment = ? WHERE id = ?";
 
-            preparedStatement.setString(1, comm);
-            preparedStatement.setString(2, key);
-            preparedStatement.executeUpdate();
+        try {
+            synchronized (this) {
+                try (Connection connection = SqlConnection.getDestinationConnection();
+                     PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    private Map<String, String> fetchTempProduct() {
-        Map<String, String> pairMap = new HashMap<>();
+                    preparedStatement.setString(1, comm);
+                    preparedStatement.setString(2, key);
+                    int rowsAffected = preparedStatement.executeUpdate();
 
-        try (Connection connection = SqlConnection.getDestinationConnection();) {
-            String query = "SELECT \"id\", barcode FROM \"tempproduct\" ORDER BY barcode";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    while (resultSet.next()) {
-                        String id = resultSet.getString("id");
-                        String barcode = resultSet.getString("barcode");
-
-                        if (barcode != null) {
-                            pairMap.put(id, barcode);
-                        } else break;
+                    if (rowsAffected > 0) {
+                        System.out.println("Comment updated successfully for key: " + key);
+                    } else {
+                        System.out.println("No rows were updated for key: " + key);
                     }
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("SQL exception occurred: " + e.getMessage());
         }
-        return pairMap;
     }
 }

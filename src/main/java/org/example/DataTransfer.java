@@ -1,7 +1,13 @@
 package org.example;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+
 public class DataTransfer {
     public DataTransfer() {
+
+    }
+    public void Start (){
         clearDB();
         try (
                 Connection sourceConnection = SqlConnection.getSourceConnection();
@@ -43,7 +49,7 @@ public class DataTransfer {
         preparedStatement.executeUpdate();
     }
 
-    public void clearDB() {
+    private void clearDB() {
         try {
             Connection connection = SqlConnection.getDestinationConnection();
             String clearQuery = "DELETE FROM tempproduct";
@@ -53,5 +59,27 @@ public class DataTransfer {
         } catch (SQLException e) {
             System.err.println("Failed to clear data in the destination table. Error: " + e.getMessage());
         }
+    }
+    public Map<String, String> fetchTempProduct() {
+        Map<String, String> pairMap = new HashMap<>();
+
+        try (Connection connection = SqlConnection.getDestinationConnection();) {
+            String query = "SELECT \"id\", barcode FROM \"tempproduct\" ORDER BY barcode";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        String id = resultSet.getString("id");
+                        String barcode = resultSet.getString("barcode");
+
+                        if (barcode != null) {
+                            pairMap.put(id, barcode);
+                        } else break;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return pairMap;
     }
 }
