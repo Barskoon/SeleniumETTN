@@ -13,44 +13,41 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-public class Deactivate {
+public class TempConsider {
     private WebDriver webDriver = null;
-    public static void main(String[] args) {
-        //Deactivate d = new Deactivate();
-        //d.Start();
-        //d.clearDB();
 
-
-    }
     public void Start () {
         webDriver = new ChromeDriver();
-        loginSet("https://insp.salyk.kg/ettn/product", "admin", "Qwerty_123!@#");
+        loginSet("https://insp.salyk.kg/ettn/productrequest", "admin", "Qwerty_123!@#");
         Map<String, String> map = fetchTempProductName();
-
         for (Map.Entry<String, String> entry : map.entrySet()) {
             processEntry(entry.getKey(), entry.getValue());
         }
-
-        webDriver.quit();
+        webDriver.close();
     }
     private void processEntry(String key, String value) {
-        WebElement id;
-        WebElement selectInformation;
-        WebElement selectButton;
-        WebElement searchButton;
 
         try {
-            id = webDriver.findElement(By.id("Id"));
-            searchButton = webDriver.findElement(By.id("search"));
-            id.clear();
-            id.sendKeys(key);
-            searchButton.click();
-            Thread.sleep(500);
-            webDriver.findElement(By.xpath("//*[contains(text(),'Деактивировать')]")).click();
-            Thread.sleep(500);
-            webDriver.findElement(By.id("Reason")).sendKeys(value);
-            webDriver.findElement(By.xpath("//*[@type='submit']")).click();
-            System.out.println(key);
+            webDriver.get("https://insp.salyk.kg/ettn/productrequest/action/" + key);
+            Thread.sleep(250);
+            if (value != null) {
+                webDriver.findElement(By.xpath("//*[@id=\"with-input\"]")).click();
+                Thread.sleep(100);
+                webDriver.findElement(By.xpath("/html/body/div[4]/div/textarea")).sendKeys(value);
+                Thread.sleep(200);
+                webDriver.findElement(By.xpath("/html/body/div[4]/div/button[1]")).click();
+            }else{
+                String currentUrl = webDriver.getCurrentUrl();
+                webDriver.findElement(By.xpath("/html/body/div[1]/div[3]/div/div[3]/div[1]/div/div/div[7]/div[2]/form/button[1]")).click();
+                if (currentUrl == webDriver.getCurrentUrl()){
+                    String errorText = webDriver.findElement(By.xpath("/html/body/div[2]/div/div[1]/div[2]")).getText();
+                    webDriver.findElement(By.xpath("//*[@id=\"with-input\"]")).click();
+                    Thread.sleep(100);
+                    webDriver.findElement(By.xpath("/html/body/div[4]/div/textarea")).sendKeys(errorText);
+                    Thread.sleep(200);
+                    webDriver.findElement(By.xpath("/html/body/div[4]/div/button[1]")).click();
+                }
+            }
 
         } catch (NoSuchElementException ignored) {
         } catch (InterruptedException e) {
@@ -87,18 +84,6 @@ public class Deactivate {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public void clearDB() {
-        try {
-            Connection connection = SqlConnection.getDestinationConnection();
-            String clearQuery = "DELETE FROM tempproduct";
-            PreparedStatement preparedStatement = connection.prepareStatement(clearQuery);
-            preparedStatement.executeUpdate();
-            System.out.println("Data cleared in the destination table.");
-        } catch (SQLException e) {
-            System.err.println("Failed to clear data in the destination table. Error: " + e.getMessage());
         }
     }
 }
