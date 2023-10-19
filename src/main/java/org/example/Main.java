@@ -5,7 +5,8 @@ public class Main {
         DataTransfer dt = new DataTransfer();
         dt.Start();
 
-        MapSplitter mp = new MapSplitter();
-        mp.splitAndPrintMap(dt.fetchTempProduct(), 4);
+    //    MapSplitter mp = new MapSplitter();
+    //    mp.splitAndPrintMap(dt.fetchTempProduct(), 4);
+
     }
 }

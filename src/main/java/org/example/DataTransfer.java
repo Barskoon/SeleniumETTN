@@ -20,11 +20,12 @@ public class DataTransfer {
 
             // Process the results and insert into the destination database
             while (resultSet.next()) {
-                String dataToTransfer1 = resultSet.getString("Id"); // Adjust with the appropriate column name
-                String dataToTransfer2 = resultSet.getString("TnvedCode"); // Adjust with the appropriate column name
-                String dataToTransfer3 = resultSet.getString("Name"); // Adjust with the appropriate column name
-                String dataToTransfer4 = resultSet.getString("Barcode"); // Adjust with the appropriate column name
-                insertDataIntoDestinationDatabase(destinationConnection, dataToTransfer1, dataToTransfer2, dataToTransfer3, dataToTransfer4);
+                String dataToTransfer1 = resultSet.getString("Id");
+                String dataToTransfer2 = resultSet.getString("TnvedCode");
+                String dataToTransfer3 = resultSet.getString("Name");
+                String dataToTransfer4 = resultSet.getString("Barcode");
+                String dataToTransfer5 = resultSet.getString("OrganizationTin");
+                insertDataIntoDestinationDatabase(destinationConnection, dataToTransfer1, dataToTransfer2, dataToTransfer3, dataToTransfer4, dataToTransfer5);
             }
 
             //System.out.println("Data transfer completed!");
@@ -34,18 +35,20 @@ public class DataTransfer {
     }
 
     private ResultSet fetchDataFromSourceDatabase(Connection sourceConnection) throws SQLException {
-        String query = "SELECT \"Id\",\"TnvedCode\", \"Name\", \"Barcode\" FROM \"TempProduct\" WHERE \"Status\" = '1' ORDER BY \"Barcode\""; // Adjust with the appropriate table name
+        String query = "SELECT \"Id\",\"TnvedCode\", \"Name\", \"Barcode\", \"OrganizationTin\" FROM \"TempProduct\" WHERE \"Status\" = '1' ORDER BY \"Barcode\"";
         PreparedStatement preparedStatement = sourceConnection.prepareStatement(query);
         return preparedStatement.executeQuery();
     }
 
-    private void insertDataIntoDestinationDatabase(Connection destinationConnection, String dataToTransfer1, String dataToTransfer2, String dataToTransfer3, String dataToTransfer4) throws SQLException {
-        String insertQuery = "INSERT INTO tempproduct (id, tnved, name, barcode) VALUES (?, ?, ?, ?)"; // Adjust with the appropriate table and column names
+    private void insertDataIntoDestinationDatabase(Connection destinationConnection, String dataToTransfer1, String dataToTransfer2, String dataToTransfer3, String dataToTransfer4, String dataToTransfer5) throws SQLException {
+        String insertQuery = "INSERT INTO tempproduct (id, tnved, name, barcode, tin, dlstr) VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = destinationConnection.prepareStatement(insertQuery);
         preparedStatement.setString(1, dataToTransfer1);
         preparedStatement.setString(2, dataToTransfer2);
         preparedStatement.setString(3, dataToTransfer3);
         preparedStatement.setString(4, dataToTransfer4);
+        preparedStatement.setString(5, dataToTransfer5);
+        preparedStatement.setInt(6, dataToTransfer3.length());
         preparedStatement.executeUpdate();
     }
 

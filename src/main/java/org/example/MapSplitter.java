@@ -30,7 +30,6 @@ public class MapSplitter {
             mapParts.add(chunkMap);
         }
 
-        // Создаем пул потоков
         ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
 
         for (int i = 0; i < numThreads; i++) {
@@ -42,7 +41,6 @@ public class MapSplitter {
             });
         }
 
-        // Завершаем работу пула потоков и ждем завершения
         executorService.shutdown();
         try {
             if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
