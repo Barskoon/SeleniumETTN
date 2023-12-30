@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class Gs1Check {
-
     private WebDriver webDriver = null;
     public Gs1Check() {
     }
@@ -27,6 +26,8 @@ public class Gs1Check {
 
     private void loginSet(String url,String login, String password) {
         try {
+            webDriver.get(url);
+            webDriver.findElement(By.id("onetrust-accept-btn-handler")).click();
             webDriver.get(url);
             webDriver.findElement(By.id("uname")).sendKeys(login);
             webDriver.findElement(By.id("pword")).sendKeys(password);
@@ -73,11 +74,11 @@ public class Gs1Check {
                     preparedStatement.setString(2, key);
                     int rowsAffected = preparedStatement.executeUpdate();
 
-                    if (rowsAffected > 0) {
-                        System.out.println("Comment updated successfully for key: " + key);
-                    } else {
-                        System.out.println("No rows were updated for key: " + key);
-                    }
+//                    if (rowsAffected > 0) {
+//                        System.out.println("Comment updated successfully for key: " + key);
+//                    } else {
+//                        System.out.println("No rows were updated for key: " + key);
+//                    }
                 }
             }
         } catch (SQLException e) {

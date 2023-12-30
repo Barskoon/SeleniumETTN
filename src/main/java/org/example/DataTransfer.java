@@ -52,7 +52,7 @@ public class DataTransfer {
         preparedStatement.executeUpdate();
     }
 
-    private void clearDB() {
+    public void clearDB() {
         try {
             Connection connection = SqlConnection.getDestinationConnection();
             String clearQuery = "DELETE FROM tempproduct";
@@ -63,7 +63,7 @@ public class DataTransfer {
             System.err.println("Failed to clear data in the destination table. Error: " + e.getMessage());
         }
     }
-    public Map<String, String> fetchTempProduct() {
+    public Map<String, String> fetchIdBarcode() {
         Map<String, String> pairMap = new HashMap<>();
 
         try (Connection connection = SqlConnection.getDestinationConnection();) {
@@ -77,6 +77,25 @@ public class DataTransfer {
                         if (barcode != null) {
                             pairMap.put(id, barcode);
                         } else break;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return pairMap;
+    }
+    public Map<String, String> fetchIdComm() {
+        Map<String, String> pairMap = new HashMap<>();
+
+        try (Connection connection = SqlConnection.getDestinationConnection();) {
+            String query = "SELECT \"id\", comment FROM \"tempproduct\"";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        String id = resultSet.getString("id");
+                        String comment = resultSet.getString("comment");
+                            pairMap.put(id, comment);
                     }
                 }
             }

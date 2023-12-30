@@ -16,12 +16,17 @@ import java.util.NoSuchElementException;
 public class TempConsider {
     private WebDriver webDriver = null;
 
-    public void Start () {
+    public void Start (Map<String, String> mapp) {
         webDriver = new ChromeDriver();
         loginSet("https://insp.salyk.kg/ettn/productrequest", "admin", "Qwerty_123!@#");
-        Map<String, String> map = fetchTempProductName();
+        Map<String, String> map = mapp;
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            processEntry(entry.getKey(), entry.getValue());
+            try {
+                processEntry(entry.getKey(), entry.getValue());
+            } catch (NoSuchElementException e) {
+                continue;
+            }
+
         }
         webDriver.close();
     }
@@ -29,7 +34,7 @@ public class TempConsider {
 
         try {
             webDriver.get("https://insp.salyk.kg/ettn/productrequest/action/" + key);
-            Thread.sleep(250);
+            Thread.sleep(100);
             if (value != null) {
                 webDriver.findElement(By.xpath("//*[@id=\"with-input\"]")).click();
                 Thread.sleep(100);
@@ -37,23 +42,14 @@ public class TempConsider {
                 Thread.sleep(200);
                 webDriver.findElement(By.xpath("/html/body/div[4]/div/button[1]")).click();
             }else{
-                String currentUrl = webDriver.getCurrentUrl();
-                webDriver.findElement(By.xpath("/html/body/div[1]/div[3]/div/div[3]/div[1]/div/div/div[7]/div[2]/form/button[1]")).click();
-                if (currentUrl == webDriver.getCurrentUrl()){
-                    String errorText = webDriver.findElement(By.xpath("/html/body/div[2]/div/div[1]/div[2]")).getText();
-                    webDriver.findElement(By.xpath("//*[@id=\"with-input\"]")).click();
-                    Thread.sleep(100);
-                    webDriver.findElement(By.xpath("/html/body/div[4]/div/textarea")).sendKeys(errorText);
-                    Thread.sleep(200);
-                    webDriver.findElement(By.xpath("/html/body/div[4]/div/button[1]")).click();
-                }
+                webDriver.findElement(By.xpath("//*[contains(text(),'Подтвердить заявку')]")).click();
+                Thread.sleep(100);
             }
 
-        } catch (NoSuchElementException ignored) {
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            System.out.println(e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        } finally {
-            webDriver.navigate().refresh();
         }
     }
     private Map<String, String> fetchTempProductName() {

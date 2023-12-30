@@ -16,8 +16,8 @@ import java.util.NoSuchElementException;
 public class Deactivate {
     private WebDriver webDriver = null;
     public static void main(String[] args) {
-        //Deactivate d = new Deactivate();
-        //d.Start();
+        Deactivate d = new Deactivate();
+        d.Start();
         //d.clearDB();
 
 
@@ -47,7 +47,7 @@ public class Deactivate {
             searchButton.click();
             Thread.sleep(500);
             webDriver.findElement(By.xpath("//*[contains(text(),'Деактивировать')]")).click();
-            Thread.sleep(500);
+            Thread.sleep(100);
             webDriver.findElement(By.id("Reason")).sendKeys(value);
             webDriver.findElement(By.xpath("//*[@type='submit']")).click();
             System.out.println(key);
@@ -62,7 +62,7 @@ public class Deactivate {
     private Map<String, String> fetchTempProductName() {
         Map<String, String> pairMap = new HashMap<>();
         try (Connection connection = SqlConnection.getDestinationConnection();) {
-            String query = "SELECT \"id\", comment FROM \"tempproduct\" ORDER BY barcode";
+            String query = "SELECT id, comment FROM deactivate";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while (resultSet.next()) {
