@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 public class Deactivate {
     private WebDriver webDriver = null;
@@ -40,21 +39,13 @@ public class Deactivate {
         WebElement searchButton;
 
         try {
-            id = webDriver.findElement(By.id("Id"));
-            searchButton = webDriver.findElement(By.id("search"));
-            id.clear();
-            id.sendKeys(key);
-            searchButton.click();
-            Thread.sleep(500);
-            webDriver.findElement(By.xpath("//*[contains(text(),'Деактивировать')]")).click();
-            Thread.sleep(100);
+            webDriver.get("http://insp.salyk.kg/ettn/product/deactivate/" + key);
             webDriver.findElement(By.id("Reason")).sendKeys(value);
             webDriver.findElement(By.xpath("//*[@type='submit']")).click();
             System.out.println(key);
 
-        } catch (NoSuchElementException ignored) {
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            System.out.println(e);
         } finally {
             webDriver.navigate().refresh();
         }

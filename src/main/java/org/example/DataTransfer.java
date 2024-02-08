@@ -5,7 +5,15 @@ import java.util.Map;
 
 public class DataTransfer {
     public DataTransfer() {
-
+        clearDB();
+        try (
+                Connection sourceConnection = SqlConnection.getSourceConnection();
+                Connection destinationConnection = SqlConnection.getDestinationConnection();
+        ) {
+            System.out.println("Connected to both databases!");
+        } catch (SQLException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
     }
     public void Start (){
         clearDB();
