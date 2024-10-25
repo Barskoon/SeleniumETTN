@@ -23,7 +23,7 @@ public class Deactivate {
     }
     public void Start () {
         webDriver = new ChromeDriver();
-        loginSet("https://insp.salyk.kg/ettn/product", "admin", "Qwerty_123!@#");
+        loginSet("https://insp.salyk.kg/ettn/product", "20601199601530528", "Qwerty_123!@#");
         Map<String, String> map = fetchTempProductName();
 
         for (Map.Entry<String, String> entry : map.entrySet()) {

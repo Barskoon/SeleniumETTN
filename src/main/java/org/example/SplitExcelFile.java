@@ -8,11 +8,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class SplitExcelFile {
 
-    private static final int MAX_RECORDS_PER_FILE = 5000;
+    private static final int MAX_RECORDS_PER_FILE = 100;
 
     public static void main(String[] args) {
-        String inputFile = "C:/Users/Imambek/Documents/Untitled.xlsx";
-        String outputFolder = "C:/Users/Imambek/Documents/";
+        String inputFile = "C:/Users/Imambek/Downloads/tempproduct.xlsx";
+        String outputFolder = "C:/Users/Imambek/Downloads/";
 
         try {
             splitExcelFile(inputFile, outputFolder);

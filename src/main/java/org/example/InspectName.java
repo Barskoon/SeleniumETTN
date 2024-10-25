@@ -13,8 +13,10 @@ public class InspectName {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             if (!startsWithLetter(entry.getValue()))
                 UpdateComment(entry.getKey(),"Наименование должно начинаться с буквы");
+            else if (endsWithSymbol(entry.getValue()))
+                UpdateComment(entry.getKey(),"Наименование не должно заканчиваться с данным символом");
             else if (wordCount(entry.getValue(),2)) {
-                UpdateComment(entry.getKey(), "Укажите наименование подробнее согласно руководству.");
+                UpdateComment(entry.getKey(), "Опишите наименование более чем двумя словами либо укажите характеристики, выражаемые цифрами");
             } else if (hasConsecutiveRepeatingIntonationSymbols(entry.getValue())){
                 UpdateComment(entry.getKey(),"Символы интонации не должны повторяться более одного раза");
                 System.out.println(entry.getValue());
@@ -102,7 +104,7 @@ public class InspectName {
     }
     public boolean hasConsecutiveRepeatingIntonationSymbols(String input) {
         if (input != null && !input.isEmpty()) {
-            String intonationSymbols = "?!.,:;@#$^&*_-+={}[]<>/\\'\"\\";
+            String intonationSymbols = "?!.,:;@#$^&*_-+={}[]<>/\\'\"\\|";
             for (int i = 0; i < input.length() - 1; i++) {
                 char currentChar = input.charAt(i);
                 char nextChar = input.charAt(i + 1);
@@ -113,6 +115,13 @@ public class InspectName {
                     return true;
                 }
             }
+        }
+        return false;
+    }
+    public boolean endsWithSymbol(String input) {
+        if (input != null && !input.isEmpty()) {
+            char lastChar = input.charAt(input.length() - 1);
+            return (lastChar) == '\\' || (lastChar) == '/' || (lastChar) == '|';
         }
         return false;
     }

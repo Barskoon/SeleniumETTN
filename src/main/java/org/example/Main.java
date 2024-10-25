@@ -13,7 +13,6 @@ public class Main {
 //        mp.gsThread(dt.fetchIdBarcode(), 2);
 //        DataTransfer dt = new DataTransfer();
 //        MapSplitter mp = new MapSplitter();
-//        mp.tempConsiderThread(dt.fetchIdComm(), 4);
-
+//        mp.tempConsiderThread(dt.fetchIdComm(), 4); //sdfdsfsdfsdfsdfsdf
     }
 }
